@@ -27,3 +27,14 @@ Only `PreToolUse` can deny. Stop is passive. Folder trust is optional for hooks.
 ## Scaffold state (gitignored)
 
 `.grok/.fast-mode`, `.grok/.needs-review`, `.grok/.feedback-signal`, `.grok/.stop-reminder`
+
+## Install surface (cc-base style)
+
+| Asset | Role |
+|---|---|
+| `setup.ps1` / `setup.sh` | Inject AGENTS.md + .grok; OS-specific hooks; manifest upgrade |
+| `.grok/scripts/doctor.*` | Post-install health + spawn smoke |
+| `.grok/scripts/gen-manifest.*` | Refresh FRAMEWORK-MANIFEST.txt |
+| `.grok/FRAMEWORK-MANIFEST.txt` | Safe upgrade vs user edits |
+
+Preferred install: `pwsh -File setup.ps1 -Target <project>`. See README and [CC-BASE-LEARNINGS.md](./CC-BASE-LEARNINGS.md).

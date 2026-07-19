@@ -16,3 +16,4 @@ _Last updated: 2026-07-20_
 ## Done
 
 - 2026-07-20: 单独可用主控/README/docs 定稿并推送。
+- 2026-07-20: 抄 cc-base：setup.ps1/sh、doctor、gen-manifest、FRAMEWORK-MANIFEST；Windows hooks 硬化；学习笔记 docs/CC-BASE-LEARNINGS.md；session-rules-banner + no-direct-code-guard；AGENTS 补五步闸/审批三档。

@@ -7,6 +7,11 @@
             "type": "command",
             "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/session-start.cmd",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/session-rules-banner.cmd",
+            "timeout": 5
           }
         ]
       }
@@ -35,6 +40,16 @@
             "type": "command",
             "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/pre-commit-check.cmd",
             "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit|search_replace",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/no-direct-code-guard.cmd",
+            "timeout": 5
           }
         ]
       }

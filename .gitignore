@@ -10,6 +10,8 @@
 !/Product-Spec-CHANGELOG.md
 !/DEV-PLAN.md
 !/progress.md
+!/setup.ps1
+!/setup.sh
 
 # Runtime state under .grok (scaffold conventions)
 .grok/.fast-mode
