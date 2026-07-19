@@ -1,0 +1,4 @@
+# Progress recorder — project memory merge only
+description = "Maintains progress.md / archive. Uses progress-recorder skill."
+default_capability_mode = "read-write"
+default_isolation = "none"

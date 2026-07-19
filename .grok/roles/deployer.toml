@@ -1,0 +1,4 @@
+# Deployer role — authorized build and deploy only
+description = "Packaging and deployment execution. Uses release-builder skill."
+default_capability_mode = "all"
+default_isolation = "none"

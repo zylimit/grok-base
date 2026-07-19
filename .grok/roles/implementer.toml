@@ -1,0 +1,4 @@
+# Implementer role — scoped coding and repair
+description = "Scoped implementation and repair. Uses dev-builder / bug-fixer skills."
+default_capability_mode = "all"
+default_isolation = "none"

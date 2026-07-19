@@ -1,0 +1,4 @@
+# Feedback observer — narrow write to feedback files only
+description = "Records AI behavior feedback. Uses feedback-writer skill."
+default_capability_mode = "read-write"
+default_isolation = "none"

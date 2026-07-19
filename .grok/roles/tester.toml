@@ -1,0 +1,4 @@
+# Tester role — independent tests, not business code
+description = "Independent high-value tests and runner evidence. Uses test-builder skill."
+default_capability_mode = "all"
+default_isolation = "none"

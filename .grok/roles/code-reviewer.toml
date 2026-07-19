@@ -1,0 +1,4 @@
+# Code reviewer role — review only, no business code edits preferred
+description = "Spec/quality review including adversarial mode. Uses code-review skill."
+default_capability_mode = "read-write"
+default_isolation = "none"

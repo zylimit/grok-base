@@ -1,0 +1,4 @@
+# Evolution runner — proposals only, no unapproved rule edits
+description = "Scans feedback and proposes rule/skill evolution. Uses evolution-engine skill."
+default_capability_mode = "read-write"
+default_isolation = "none"

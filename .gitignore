@@ -1,0 +1,28 @@
+# grok-base tracks scaffold source + maintainer docs only.
+/*
+!/.gitignore
+!/.gitattributes
+!/.grok/
+!/docs/
+!/AGENTS.md
+!/README.md
+!/Product-Spec.md
+!/Product-Spec-CHANGELOG.md
+!/DEV-PLAN.md
+!/progress.md
+
+# Runtime state under .grok (scaffold conventions)
+.grok/.fast-mode
+.grok/.needs-review
+.grok/.needs-review.lock
+.grok/.stop-reminder
+.grok/.feedback-signal
+.grok/config.local.toml
+
+# Local work
+/.pr/
+/.worktrees/
+
+.DS_Store
+Thumbs.db
+*.swp
