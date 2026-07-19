@@ -78,16 +78,27 @@ bash .grok/scripts/fast-mode.sh on|off|status
 - 仅 Grok 原生表面  
 - 无默认 auto-push、无外部 AI 桥  
 
-## 与 Codex 同目录共用
+## 与 Codex 同目录共用（直接组装）
 
-可以。目录并存：根目录 `AGENTS.md` + `.grok/` + `.codex/` + `.agents/`。  
-不要把 Grok/Codex 专用主控原样互相覆盖。
+同仓时**不要**用本仓 Grok 专用 `AGENTS.md` 覆盖 Codex 主控。
 
-**和 Claude 的差别：** Claude 常把规则放在 `.claude/CLAUDE.md`；Grok/Codex 的共用主控应在**仓库根**的 `AGENTS.md`。Grok 额外规则可用 `.grok/rules/`，不能指望「只塞进隐藏目录」就让 Codex 也读到。
+可执行主控以 **[codex-base 根 AGENTS.md](https://github.com/zylimit/codex-base/blob/main/AGENTS.md)** 为准（双宿主分支已写进本体，拷过去就能用）。
 
-共用主控模板（复制为项目根 `AGENTS.md`）：
+```powershell
+$proj = "D:\path\to\project"
+# 1) Codex 面 = 主控 + .codex + .agents（Skills 权威在 .agents/skills）
+Copy-Item -Recurse D:\Code\codex-base\AGENTS.md, D:\Code\codex-base\.codex, D:\Code\codex-base\.agents $proj
+# 2) Grok 面 = 只加 .grok（不覆盖 AGENTS.md）
+Copy-Item -Recurse .\.grok $proj
+```
 
-- [docs/AGENTS.shared.example.md](docs/AGENTS.shared.example.md)
+| 项 | 同仓约定 |
+|---|---|
+| 主控 | 根上一份，来自 codex-base `AGENTS.md` |
+| Skills | `.agents/skills/`（Grok 也会扫描） |
+| Grok 运行时 | `.grok/`（agents/hooks/scripts） |
+
+**和 Claude 的差别：** 主控在仓库根 `AGENTS.md`，不是 `.claude/CLAUDE.md`。
 
 ## 维护者文档
 
