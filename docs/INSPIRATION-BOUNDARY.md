@@ -23,6 +23,14 @@ This document records **what we borrowed as product ideas** versus **what we ref
 | systemMessage injection from prompt hooks | Grok passive hooks ignore stdout for control; use files + main-agent rules |
 | External AI bridge / daemon | Out of scope |
 
+## Dual-harness projects
+
+When Grok and Codex share one repo:
+
+- Keep official trees side by side: `.grok/` and `.codex/` (+ Codex `.agents/`).
+- Use one root `AGENTS.md` written as a **shared control plane** (tool branches inside), not a single-tool monolith.
+- Template: [AGENTS.shared.example.md](./AGENTS.shared.example.md).
+
 ## Rule of thumb
 
 > If a change makes the tree look more like Codex/Claude and less like `~/.grok` / `.grok` docs, reject it.  
