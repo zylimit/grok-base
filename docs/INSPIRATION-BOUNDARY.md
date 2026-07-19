@@ -1,33 +1,26 @@
-# Inspiration Boundary (codex-base → grok-base)
+# Inspiration Boundary
 
-This document records **what we borrowed as product ideas** versus **what we refused to copy as architecture**.
+Grok Base **单独可用**。复制面只有：
 
-## Borrowed (workflow ideas only)
+```text
+AGENTS.md
+.grok/
+```
 
-- SiteMaster-style product lifecycle: Spec → Plan → Build → Review → Test → Release
-- Role separation: implementer / reviewer / tester / deployer / feedback / evolution / progress
-- Unified task brief and result envelope
-- Fast Mode as an explicit, expiring quality bypass (safety never bypassed)
-- progress.md as project memory; feedback/ as AI-behavior learning
-- red-blue adversarial review as a *mode* of code-review, not a second skill tree
+## Borrowed as workflow ideas only
 
-## Not borrowed (architecture)
+Product lifecycle, role separation, task brief / result envelope, Fast Mode semantics, progress vs feedback — may learn from other scaffolds (e.g. codex-base).
 
-| Foreign pattern | Why rejected for Grok Base |
+## Not borrowed as architecture
+
+| Foreign pattern | Why rejected |
 |---|---|
-| `.codex/` config hub | Grok project surface is `.grok/` |
-| Single agent TOML with sandbox_mode | Grok uses agents.md + roles.toml + personas.toml |
-| `command_windows` dual hook entries | Grok hook JSON has one `command`; scripts live under `hooks/bin` relative to JSON |
-| `.grok/` skills+hooks+scripts tree as primary | Official skill root is `.grok/skills/`; hooks are `.grok/hooks/` |
-| Blocking Stop gate (`continue:false`) | Grok Stop is passive only |
-| systemMessage injection from prompt hooks | Grok passive hooks ignore stdout for control; use files + main-agent rules |
-| External AI bridge / daemon | Out of scope |
-
-## Relationship to codex-base
-
-Grok Base and Codex Base are **separate scaffolds**. Do not dual-stack them in one business repo. Pick one harness per project.
+| `.codex/` hub | Grok surface is `.grok/` |
+| `.agents/` as primary control plane | Official skills/hooks live under `.grok/` |
+| Dual-host shared AGENTS with Codex | Scaffolds stay **separate**; one project uses one harness |
+| Claude `.claude/CLAUDE.md` as only main brief | Grok main control is root `AGENTS.md` |
+| Installer / daemon / external AI bridge | Out of scope |
 
 ## Rule of thumb
 
-> If a change makes the tree look more like Codex/Claude and less like `~/.grok` / `.grok` docs, reject it.  
-> If a change improves product workflow while staying on official Grok surfaces, accept it.
+> Workflow may be inspired elsewhere. Runtime layout must match Grok official docs. Run alone: copy two assets and open Grok.

@@ -8,11 +8,12 @@
 - 不迎合，不接受模糊需求；该追问时一次问 1–2 个关键问题。
 - 主动给出明确建议，但不替用户做会显著改变范围的决定。
 - 涉及外部库、API、框架版本或当前能力时，先查官方最新资料。
-- 只使用 **Grok 官方机制**：`AGENTS.md`、`.grok/`（skills / agents / roles / personas / hooks）、`spawn_subagent`。不引入 `.codex`、`.agents` 中枢、外部模型桥、daemon 或 tmux 编排。
+- 只使用 **Grok 官方机制**：`AGENTS.md`、`.grok/`（skills / agents / roles / personas / hooks）、`spawn_subagent`。
+- **本脚手架单独运行**：不依赖 codex-base、不引入 `.codex` 中枢、外部模型桥、daemon 或 tmux 编排。
 
-## 复制即用（官方布局 · 零安装）
+## 复制即用（单独可用 · 零安装）
 
-运行资产只有两项，**拷到目标项目根目录即可用**，无 setup、无安装器、无注册步骤：
+运行资产只有两项，**拷到目标项目根目录即可单独使用**，无 setup、无安装器、无与其它 harness 同仓拼装：
 
 ```text
 AGENTS.md                 # 项目规则（Grok 打开项目即加载）
@@ -186,10 +187,9 @@ bash .grok/scripts/fast-mode.sh off
 ## 初始化话术
 
 ```text
-我是 SiteMaster（Grok Base）。
-布局遵循 Grok 官方：AGENTS.md + .grok/{skills,agents,roles,personas,hooks}。
-从需求到发布，用原生 spawn_subagent 推进。输入 / 查看 Skills。
-现在，说说你想做什么？
+我是 SiteMaster（Grok Base，单独可用）。
+拷贝面：AGENTS.md + .grok/。从需求到发布，用 spawn_subagent 推进。
+输入 / 查看 Skills。现在，说说你想做什么？
 ```
 
 随后做项目状态检测与路由。
