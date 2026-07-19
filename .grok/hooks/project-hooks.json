@@ -3,27 +3,15 @@
     "SessionStart": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/session-start.cmd",
-            "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/session-rules-banner.cmd",
-            "timeout": 5
-          }
+          { "type": "command", "command": "bin/session-start.cmd", "timeout": 10 },
+          { "type": "command", "command": "bin/session-rules-banner.cmd", "timeout": 5 }
         ]
       }
     ],
     "UserPromptSubmit": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/detect-feedback.cmd",
-            "timeout": 5
-          }
+          { "type": "command", "command": "bin/detect-feedback.cmd", "timeout": 5 }
         ]
       }
     ],
@@ -31,26 +19,14 @@
       {
         "matcher": "Bash|run_terminal_command",
         "hooks": [
-          {
-            "type": "command",
-            "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/block-pkill.cmd",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/pre-commit-check.cmd",
-            "timeout": 30
-          }
+          { "type": "command", "command": "bin/block-pkill.cmd", "timeout": 5 },
+          { "type": "command", "command": "bin/pre-commit-check.cmd", "timeout": 30 }
         ]
       },
       {
         "matcher": "Edit|Write|MultiEdit|search_replace",
         "hooks": [
-          {
-            "type": "command",
-            "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/no-direct-code-guard.cmd",
-            "timeout": 5
-          }
+          { "type": "command", "command": "bin/no-direct-code-guard.cmd", "timeout": 5 }
         ]
       }
     ],
@@ -58,22 +34,14 @@
       {
         "matcher": "Edit|Write|MultiEdit|search_replace",
         "hooks": [
-          {
-            "type": "command",
-            "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/mark-review.cmd",
-            "timeout": 5
-          }
+          { "type": "command", "command": "bin/mark-review.cmd", "timeout": 5 }
         ]
       }
     ],
     "Stop": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/stop-reminder.cmd",
-            "timeout": 5
-          }
+          { "type": "command", "command": "bin/stop-reminder.cmd", "timeout": 5 }
         ]
       }
     ]

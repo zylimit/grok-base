@@ -181,6 +181,9 @@ $hookNames = @(
     'block-pkill', 'pre-commit-check', 'no-direct-code-guard',
     'mark-review', 'stop-reminder'
 )
+# Passive hooks: always process-exit 0 (never red-bar SessionStart/Stop/etc.)
+# Blocking hooks: preserve exit 2 (deny); other non-zero fail-open allow + exit 0
+$passiveHooks = @('session-start', 'session-rules-banner', 'detect-feedback', 'mark-review', 'stop-reminder')
 foreach ($h in $hookNames) {
     $cmdPath = Join-Path $binDir "$h.cmd"
     $ps1Path = Join-Path $binDir "$h.ps1"
@@ -188,11 +191,24 @@ foreach ($h in $hookNames) {
         Write-Warn "missing $h.ps1 (skip cmd generate)"
         continue
     }
-    $lines = @(
+    $isPassive = $passiveHooks -contains $h
+    $lines = [System.Collections.Generic.List[string]]::new()
+    $lines.AddRange([string[]]@(
         '@echo off'
         'setlocal EnableDelayedExpansion'
         'set "HERE=%~dp0"'
+        'cd /d "%~dp0" 2>nul'
         "set `"PS1=%HERE%$h.ps1`""
+        'if not exist "!PS1!" ('
+    ))
+    if ($isPassive) {
+        $lines.Add('  exit 0')
+    } else {
+        $lines.Add('  echo {"decision":"allow"}')
+        $lines.Add('  exit 0')
+    }
+    $lines.AddRange([string[]]@(
+        ')'
         'set "RC=0"'
         'if exist "%ProgramW6432%\PowerShell\7\pwsh.exe" ('
         '  "%ProgramW6432%\PowerShell\7\pwsh.exe" -NoProfile -ExecutionPolicy Bypass -File "!PS1!"'
@@ -207,29 +223,43 @@ foreach ($h in $hookNames) {
         '  powershell.exe -NoProfile -ExecutionPolicy Bypass -File "!PS1!"'
         '  set "RC=!ERRORLEVEL!"'
         ')'
-        'exit /b !RC!'
-    )
+        'if not defined RC set "RC=0"'
+        'if "!RC!"=="" set "RC=0"'
+    ))
+    if ($isPassive) {
+        # Use process exit (not exit /b) so Grok wrapper exit code is reliable
+        $lines.Add('exit 0')
+    } else {
+        $lines.AddRange([string[]]@(
+            'if "!RC!"=="2" exit 2'
+            'if not "!RC!"=="0" ('
+            '  echo {"decision":"allow"}'
+            '  exit 0'
+            ')'
+            'exit 0'
+        ))
+    }
     $text = ($lines -join "`r`n") + "`r`n"
     [System.IO.File]::WriteAllText($cmdPath, $text, [System.Text.Encoding]::ASCII)
 }
-Write-Ok 'Windows .cmd hook wrappers written'
+Write-Ok 'Windows .cmd hook wrappers written (hardened exit codes)'
 
-# Keep hook JSON as a here-string so structure matches source project-hooks.json
+# Relative to project-hooks.json (official Grok docs) — avoids ${GROK_WORKSPACE_ROOT} expansion issues on Windows
 $hooksJsonText = @'
 {
   "hooks": {
     "SessionStart": [
       {
         "hooks": [
-          { "type": "command", "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/session-start.cmd", "timeout": 10 },
-          { "type": "command", "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/session-rules-banner.cmd", "timeout": 5 }
+          { "type": "command", "command": "bin/session-start.cmd", "timeout": 10 },
+          { "type": "command", "command": "bin/session-rules-banner.cmd", "timeout": 5 }
         ]
       }
     ],
     "UserPromptSubmit": [
       {
         "hooks": [
-          { "type": "command", "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/detect-feedback.cmd", "timeout": 5 }
+          { "type": "command", "command": "bin/detect-feedback.cmd", "timeout": 5 }
         ]
       }
     ],
@@ -237,14 +267,14 @@ $hooksJsonText = @'
       {
         "matcher": "Bash|run_terminal_command",
         "hooks": [
-          { "type": "command", "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/block-pkill.cmd", "timeout": 5 },
-          { "type": "command", "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/pre-commit-check.cmd", "timeout": 30 }
+          { "type": "command", "command": "bin/block-pkill.cmd", "timeout": 5 },
+          { "type": "command", "command": "bin/pre-commit-check.cmd", "timeout": 30 }
         ]
       },
       {
         "matcher": "Edit|Write|MultiEdit|search_replace",
         "hooks": [
-          { "type": "command", "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/no-direct-code-guard.cmd", "timeout": 5 }
+          { "type": "command", "command": "bin/no-direct-code-guard.cmd", "timeout": 5 }
         ]
       }
     ],
@@ -252,14 +282,14 @@ $hooksJsonText = @'
       {
         "matcher": "Edit|Write|MultiEdit|search_replace",
         "hooks": [
-          { "type": "command", "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/mark-review.cmd", "timeout": 5 }
+          { "type": "command", "command": "bin/mark-review.cmd", "timeout": 5 }
         ]
       }
     ],
     "Stop": [
       {
         "hooks": [
-          { "type": "command", "command": "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/stop-reminder.cmd", "timeout": 5 }
+          { "type": "command", "command": "bin/stop-reminder.cmd", "timeout": 5 }
         ]
       }
     ]
