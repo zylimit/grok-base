@@ -57,10 +57,16 @@ bash .grok/scripts/fast-mode.sh on|off|status
 
 ## Hooks（Windows）
 
-Hook 必须通过 **pwsh** 调 `.ps1`，不能直接 spawn `.sh`。  
-直接跑 `.sh` 会在 Windows 上报：**error 193（不是有效的 Win32 应用程序）**。
+Grok 会把 `command` 当成**单个可执行文件路径**去启动。
 
-需要 `pwsh`（PowerShell 7+）在 PATH。项目 Hooks 首次可能要 `/hooks-trust`。
+| 写法 | Windows 结果 |
+|---|---|
+| `bin/foo.sh` | error **193**（不是有效 Win32 程序） |
+| `pwsh -File ...` 整行 | 常失败（整串被当文件名） |
+| **`bin/foo.cmd`** | 正常：cmd 再调 PowerShell 脚本 |
+
+本脚手架 hooks 入口为相对路径 **`bin/*.cmd`**（相对 `project-hooks.json`）。  
+本机需要 PowerShell（优先 7 的 `pwsh`）。项目 Hooks 首次可能要 `/hooks-trust`，改完 hook 配置后请 **重启 Grok 会话** 或在 Hooks 面板 reload。
 
 ## 默认原则
 
