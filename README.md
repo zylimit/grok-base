@@ -55,6 +55,13 @@ pwsh .grok/scripts/fast-mode.ps1 on|off|status
 bash .grok/scripts/fast-mode.sh on|off|status
 ```
 
+## Hooks（Windows）
+
+Hook 必须通过 **pwsh** 调 `.ps1`，不能直接 spawn `.sh`。  
+直接跑 `.sh` 会在 Windows 上报：**error 193（不是有效的 Win32 应用程序）**。
+
+需要 `pwsh`（PowerShell 7+）在 PATH。项目 Hooks 首次可能要 `/hooks-trust`。
+
 ## 默认原则
 
 - 单独可用、拷贝即用、零安装  
