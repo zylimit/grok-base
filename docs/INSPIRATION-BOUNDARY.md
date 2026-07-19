@@ -28,8 +28,10 @@ This document records **what we borrowed as product ideas** versus **what we ref
 When Grok and Codex share one repo:
 
 - Keep official trees side by side: `.grok/` and `.codex/` (+ Codex `.agents/`).
-- Use one root `AGENTS.md` written as a **shared control plane** (tool branches inside), not a single-tool monolith.
+- Use one **repository-root** `AGENTS.md` as a **shared control plane** (tool branches inside), not a single-tool monolith.
 - Template: [AGENTS.shared.example.md](./AGENTS.shared.example.md).
+
+Unlike Claude Code (which can keep the main brief in `.claude/CLAUDE.md`), Grok+Codex shared policy belongs at root `AGENTS.md`. Grok-only extras may use `.grok/rules/*.md`; do not put the only copy of shared policy solely under `.claude/` or `.grok/` if Codex must see it.
 
 ## Rule of thumb
 

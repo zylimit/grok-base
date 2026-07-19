@@ -1,8 +1,50 @@
 # SiteMaster（Grok + Codex 共用主控模板）
 
-> **用途**：同一仓库同时给 **Grok** 与 **Codex** 用时，把本文件复制为项目根目录的 `AGENTS.md`。  
+> **用途**：同一仓库同时给 **Grok** 与 **Codex** 用时，把本文件复制为项目**根目录**的 `AGENTS.md`。  
 > **原则**：公共纪律与工作流写一遍；**工具相关只写分支**，细节落在各自官方目录。  
 > **不要**把 grok-base / codex-base 的专用 `AGENTS.md` 原样互相覆盖。
+
+---
+
+## 放置位置：和 Claude 不一样
+
+Claude Code 可以把主规则藏在隐藏目录里：
+
+```text
+.claude/CLAUDE.md          # Claude 官方常见位置
+.claude/rules/*.md
+```
+
+**Grok / Codex 的主控不是这样：**
+
+| 工具 | 主规则文件放哪 | 可选补充 |
+|---|---|---|
+| **Claude** | 根 `CLAUDE.md` **或** `.claude/CLAUDE.md` | `.claude/rules/*.md` |
+| **Grok** | 仓库路径上的 **`AGENTS.md`（通常在根）** | `.grok/rules/*.md`；兼容时也会读 `.claude/CLAUDE.md` |
+| **Codex** | 根目录 **`AGENTS.md`**（发现预算有限，宜精简） | 细节进 Skills / `.codex/agents`，不要塞成巨石 |
+
+因此：
+
+1. **共用主控必须放在仓库根：`AGENTS.md`**  
+   - 这样 Grok 与 Codex 都会加载。  
+   - **不要**指望只放 `.grok/AGENTS.md` 或 `.claude/AGENTS.md` 就当「唯一主控」——Codex 不会按 Claude 那套去读。
+2. **Grok 专用增补**（可选）→ `.grok/rules/*.md`（官方 rules 目录，始终扫描）。  
+3. **Claude 专用**（若同仓还开 Claude）→ `.claude/CLAUDE.md` 或 `.claude/rules/`。  
+4. Grok 在兼容模式下**可能**读到 `.claude/CLAUDE.md`；Codex **不保证**读它——双用/Grok+Codex 场景仍以根 `AGENTS.md` 为准。
+
+```text
+project/
+├── AGENTS.md                 # ★ 共用主控：必须在根（给 Grok + Codex）
+├── .grok/
+│   ├── rules/                # 可选：仅 Grok 增补规则（*.md）
+│   ├── skills/ agents/ ...
+│   └── hooks/
+├── .codex/                   # 仅 Codex
+├── .agents/                  # 主要 Codex skills/hooks
+└── .claude/                  # 可选：仅 Claude；不能替代根 AGENTS.md 给 Codex
+    ├── CLAUDE.md
+    └── rules/
+```
 
 ---
 
@@ -24,8 +66,9 @@
 
 ```text
 project/
-├── AGENTS.md                 # 本文件：公共主控（两边都读）
+├── AGENTS.md                 # 本文件：公共主控（根目录，Grok+Codex 都读）
 ├── .grok/                    # 仅 Grok
+│   ├── rules/                # 可选 Grok 增补（不是主 AGENTS 的替代品）
 │   ├── skills/
 │   ├── agents/ | roles/ | personas/
 │   ├── hooks/

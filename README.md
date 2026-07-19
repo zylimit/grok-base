@@ -80,8 +80,10 @@ bash .grok/scripts/fast-mode.sh on|off|status
 
 ## 与 Codex 同目录共用
 
-可以。目录并存：`AGENTS.md` + `.grok/` + `.codex/` + `.agents/`。  
+可以。目录并存：根目录 `AGENTS.md` + `.grok/` + `.codex/` + `.agents/`。  
 不要把 Grok/Codex 专用主控原样互相覆盖。
+
+**和 Claude 的差别：** Claude 常把规则放在 `.claude/CLAUDE.md`；Grok/Codex 的共用主控应在**仓库根**的 `AGENTS.md`。Grok 额外规则可用 `.grok/rules/`，不能指望「只塞进隐藏目录」就让 Codex 也读到。
 
 共用主控模板（复制为项目根 `AGENTS.md`）：
 
