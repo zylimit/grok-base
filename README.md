@@ -78,6 +78,15 @@ bash .grok/scripts/fast-mode.sh on|off|status
 - 仅 Grok 原生表面  
 - 无默认 auto-push、无外部 AI 桥  
 
+## 与 Codex 同目录共用
+
+可以。目录并存：`AGENTS.md` + `.grok/` + `.codex/` + `.agents/`。  
+不要把 Grok/Codex 专用主控原样互相覆盖。
+
+共用主控模板（复制为项目根 `AGENTS.md`）：
+
+- [docs/AGENTS.shared.example.md](docs/AGENTS.shared.example.md)
+
 ## 维护者文档
 
 - [架构](docs/ARCHITECTURE.md)
