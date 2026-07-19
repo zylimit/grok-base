@@ -78,27 +78,12 @@ bash .grok/scripts/fast-mode.sh on|off|status
 - 仅 Grok 原生表面  
 - 无默认 auto-push、无外部 AI 桥  
 
-## 与 Codex 同目录共用（直接组装）
+## 与 Codex
 
-同仓时**不要**用本仓 Grok 专用 `AGENTS.md` 覆盖 Codex 主控。
+**分开单独用。** 不要和 codex-base 同仓硬叠两套主控。
 
-可执行主控以 **[codex-base 根 AGENTS.md](https://github.com/zylimit/codex-base/blob/main/AGENTS.md)** 为准（双宿主分支已写进本体，拷过去就能用）。
-
-```powershell
-$proj = "D:\path\to\project"
-# 1) Codex 面 = 主控 + .codex + .agents（Skills 权威在 .agents/skills）
-Copy-Item -Recurse D:\Code\codex-base\AGENTS.md, D:\Code\codex-base\.codex, D:\Code\codex-base\.agents $proj
-# 2) Grok 面 = 只加 .grok（不覆盖 AGENTS.md）
-Copy-Item -Recurse .\.grok $proj
-```
-
-| 项 | 同仓约定 |
-|---|---|
-| 主控 | 根上一份，来自 codex-base `AGENTS.md` |
-| Skills | `.agents/skills/`（Grok 也会扫描） |
-| Grok 运行时 | `.grok/`（agents/hooks/scripts） |
-
-**和 Claude 的差别：** 主控在仓库根 `AGENTS.md`，不是 `.claude/CLAUDE.md`。
+- 只用 Grok：拷本仓 `AGENTS.md` + `.grok/`
+- 只用 Codex：用 [codex-base](https://github.com/zylimit/codex-base) 的 `AGENTS.md` + `.codex/` + `.agents/`
 
 ## 维护者文档
 

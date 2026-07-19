@@ -1,16 +1,10 @@
-# 同仓主控已落在 codex-base
+# 已撤销同仓方案
 
-Grok + Codex **同仓**时，可执行主控是：
+`codex-base` 与 `grok-base` **分开单独使用**，不再维护双宿主共用主控。
 
-**https://github.com/zylimit/codex-base/blob/main/AGENTS.md**
+| 脚手架 | 复制面 |
+|---|---|
+| **codex-base** | `AGENTS.md` + `.codex/` + `.agents/` |
+| **grok-base** | `AGENTS.md` + `.grok/` |
 
-（根目录 `AGENTS.md` 本体，不是 docs 里的示意文。）
-
-组装：
-
-1. 拷 codex-base 的 `AGENTS.md` + `.codex/` + `.agents/`
-2. 再拷本仓 `.grok/`（不要覆盖 `AGENTS.md`）
-
-Skills 权威：`.agents/skills/`。详见 codex-base README「与 Grok 同仓」。
-
-仅 Grok 单用：仍拷本仓 `AGENTS.md` + `.grok/`。
+不要在同一业务项目里叠两套主控硬共用。需要换工具时换脚手架，不要混装。
