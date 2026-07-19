@@ -1,9 +1,10 @@
 # Grok Base
 
-纯 **xAI Grok**、复制即用脚手架。  
-**没有安装器、没有 setup、没有 daemon。** 拷两项到项目根目录，用 Grok 打开即可。
+纯 **xAI Grok**、复制即用脚手架。单独可用，无需安装器 / setup / daemon。
 
 ## 使用
+
+把下面两项拷到目标项目根目录：
 
 ```text
 AGENTS.md
@@ -14,34 +15,37 @@ AGENTS.md
 Copy-Item -Recurse AGENTS.md, .grok D:\path\to\your-project\
 ```
 
-然后在该目录打开 Grok。无需 `npm install`、无需注册服务。
+在该项目中打开 Grok 即可。
 
-Grok 自动加载：
+- 规则：`AGENTS.md`
+- Skills：`.grok/skills/`
+- Sub-Agent：`.grok/agents` · `roles` · `personas`
+- Hooks：`.grok/hooks/`（项目已信任时）
 
-- 根目录 `AGENTS.md`
-- `.grok/skills/`（Skills / `/` 命令）
-- `.grok/agents` · `roles` · `personas`（Sub-Agent）
-- `.grok/hooks/`（项目已信任时）
-
-有同名文件时先合并，不要覆盖项目自有规则。
+有同名文件时先合并。
 
 ## 结构
 
 ```text
-.grok/
-├── skills/       # 14 个工作流 Skill
-├── agents/       # 7 个 agent 类型
-├── roles/
-├── personas/
-├── hooks/        # project-hooks.json + bin/*.sh
-├── scripts/      # fast-mode
-├── feedback/
-└── EVOLUTION.md
+grok-base/
+├── AGENTS.md
+├── .grok/
+│   ├── skills/
+│   ├── agents/
+│   ├── roles/
+│   ├── personas/
+│   ├── hooks/
+│   ├── scripts/
+│   ├── feedback/
+│   └── EVOLUTION.md
+├── docs/                 # 维护文档，不进复制面
+├── Product-Spec.md
+└── progress.md
 ```
 
-源码仓的 `docs/`、`Product-Spec*.md`、`progress.md` **不用拷**。
+真正复制面只有 **`AGENTS.md` + `.grok/`**。
 
-## Fast Mode（可选）
+## Fast Mode
 
 ```powershell
 pwsh .grok/scripts/fast-mode.ps1 on|off|status
@@ -51,25 +55,11 @@ pwsh .grok/scripts/fast-mode.ps1 on|off|status
 bash .grok/scripts/fast-mode.sh on|off|status
 ```
 
-跳过自动测试/检视；**不**跳过安全护栏。
+## 默认原则
 
-## Hooks「信任」
+- 单独可用、拷贝即用、零安装  
+- Fast Mode / auto-push 默认关  
+- Sub-Agent 不嵌套  
+- 用户当前指令优先  
 
-不是安装步骤。Grok 对含项目 Hooks 的目录可能要求首次确认（`/hooks-trust` 或 `--trust`）。
-
-- 未信任：`AGENTS.md` / Skills / Agents 仍可用，Hooks 不跑  
-- 已信任：安全脚本等生效  
-
-## 原则
-
-- 拷贝即交付，零安装  
-- 仅 Grok 官方表面（`AGENTS.md` + `.grok/`）  
-- 与 codex-base **分开单独用**，不要同仓硬叠  
-- 无默认 auto-push、无外部 AI 桥  
-
-## 维护者文档
-
-- [架构](docs/ARCHITECTURE.md)
-- [能力矩阵](docs/CAPABILITY-MATRIX.md)
-- [角色契约](docs/ROLE-CONTRACTS.md)
-- [借鉴边界](docs/INSPIRATION-BOUNDARY.md)
+维护者文档：[架构](docs/ARCHITECTURE.md) · [能力矩阵](docs/CAPABILITY-MATRIX.md) · [角色契约](docs/ROLE-CONTRACTS.md) · [借鉴边界](docs/INSPIRATION-BOUNDARY.md)
