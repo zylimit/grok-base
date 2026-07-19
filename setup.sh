@@ -124,22 +124,15 @@ cat >"$HOOKS_JSON" <<'EOF'
     "SessionStart": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/session-start.sh\"",
-            "timeout": 10
-          }
+          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/session-start.sh\"", "timeout": 10 },
+          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/session-rules-banner.sh\"", "timeout": 5 }
         ]
       }
     ],
     "UserPromptSubmit": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/detect-feedback.sh\"",
-            "timeout": 5
-          }
+          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/detect-feedback.sh\"", "timeout": 5 }
         ]
       }
     ],
@@ -147,16 +140,14 @@ cat >"$HOOKS_JSON" <<'EOF'
       {
         "matcher": "Bash|run_terminal_command",
         "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/block-pkill.sh\"",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/pre-commit-check.sh\"",
-            "timeout": 30
-          }
+          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/block-pkill.sh\"", "timeout": 5 },
+          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/pre-commit-check.sh\"", "timeout": 30 }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit|search_replace",
+        "hooks": [
+          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/no-direct-code-guard.sh\"", "timeout": 5 }
         ]
       }
     ],
@@ -164,22 +155,14 @@ cat >"$HOOKS_JSON" <<'EOF'
       {
         "matcher": "Edit|Write|MultiEdit|search_replace",
         "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/mark-review.sh\"",
-            "timeout": 5
-          }
+          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/mark-review.sh\"", "timeout": 5 }
         ]
       }
     ],
     "Stop": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/stop-reminder.sh\"",
-            "timeout": 5
-          }
+          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/stop-reminder.sh\"", "timeout": 5 }
         ]
       }
     ]

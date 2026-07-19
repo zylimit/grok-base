@@ -54,7 +54,7 @@ if (Test-Path -LiteralPath '.grok\hooks\project-hooks.json') {
 $isWin = $env:OS -match 'Windows' -or $IsWindows
 if ($isWin) {
     $cmds = @(Get-ChildItem '.grok\hooks\bin\*.cmd' -ErrorAction SilentlyContinue)
-    if ($cmds.Count -ge 6) { Ok "cmd hooks=$($cmds.Count)" } else { Bad "cmd hooks low: $($cmds.Count)" }
+    if ($cmds.Count -ge 8) { Ok "cmd hooks=$($cmds.Count)" } else { Bad "cmd hooks low: $($cmds.Count)" }
     foreach ($c in $cmds) {
         $ps1 = [IO.Path]::ChangeExtension($c.FullName, '.ps1')
         if (-not (Test-Path -LiteralPath $ps1)) { Bad "missing ps1 for $($c.Name)" }

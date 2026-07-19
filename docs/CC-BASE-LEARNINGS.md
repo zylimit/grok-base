@@ -145,9 +145,9 @@ cc-base 审批三档：
 | doctor + spawn smoke | 已有 |
 | gen-manifest + FRAMEWORK-MANIFEST | 已有 |
 | Windows .cmd + 延迟 ERRORLEVEL + ProgramW6432 pwsh | 已有 |
-| session-rules-banner | 进行中 |
-| no-direct-code-guard | 进行中 |
-| 五步闸 / 审批三档写进 AGENTS | 进行中 |
+| session-rules-banner | 已有 |
+| no-direct-code-guard | 已有 |
+| 五步闸 / 审批三档写进 AGENTS | 已有 |
 | test-setup / release | 待做 |
 
 ---
