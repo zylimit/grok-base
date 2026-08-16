@@ -18,10 +18,19 @@ printf 'target: %s\n' "$(pwd)"
 [ -f AGENTS.md ] && ok 'AGENTS.md exists' || bad 'AGENTS.md missing'
 [ -d .grok ] && ok '.grok exists' || { bad '.grok missing'; exit 1; }
 
-for r in implementer code-reviewer tester deployer feedback-observer evolution-runner progress-recorder; do
+for r in architect implementer code-reviewer tester deployer feedback-observer evolution-runner progress-recorder; do
   [ -f ".grok/agents/$r.md" ] && ok "agent $r" || bad "agent $r missing"
   [ -f ".grok/roles/$r.toml" ] && ok "role $r" || bad "role $r missing"
   [ -f ".grok/personas/$r.toml" ] && ok "persona $r" || bad "persona $r missing"
+done
+
+rules=$(find .grok/rules -maxdepth 1 -type f -name '*.md' 2>/dev/null | wc -l | tr -d ' ')
+[ "${rules:-0}" -ge 3 ] && ok "rules count=$rules" || bad "rules count low: $rules"
+[ -f .grok/config.toml ] && ok 'config.toml (permission baseline)' || note 'config.toml missing'
+[ -f .grok/sandbox.toml ] && ok 'sandbox.toml (profiles)' || note 'sandbox.toml missing'
+[ -f .grok/arch/boundaries.txt ] && ok 'arch/boundaries.txt' || note 'arch/boundaries.txt missing'
+for s in static-check arch-check codemap; do
+  [ -f ".grok/scripts/$s.sh" ] && ok "script $s.sh" || bad "script $s.sh missing"
 done
 
 skills=0

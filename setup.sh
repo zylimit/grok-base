@@ -37,7 +37,8 @@ copy_file() {
     printf 'backup: %s.bak\n' "$dest"
   fi
   cp -p "$src" "$dest"
-  [ -n "$mode" ] && chmod "$mode" "$dest"
+  # NB: keep exit status 0 when mode is empty (set -e would kill the script).
+  [ -z "$mode" ] || chmod "$mode" "$dest"
 }
 
 OLD_MANIFEST=""
@@ -140,8 +141,15 @@ cat >"$HOOKS_JSON" <<'EOF'
       {
         "matcher": "Bash|run_terminal_command",
         "hooks": [
+          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/safe-shell.sh\"", "timeout": 5 },
           { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/block-pkill.sh\"", "timeout": 5 },
           { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/pre-commit-check.sh\"", "timeout": 30 }
+        ]
+      },
+      {
+        "matcher": "Read|read_file|Edit|Write|MultiEdit|search_replace",
+        "hooks": [
+          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/secrets-guard.sh\"", "timeout": 5 }
         ]
       },
       {
@@ -156,6 +164,14 @@ cat >"$HOOKS_JSON" <<'EOF'
         "matcher": "Edit|Write|MultiEdit|search_replace",
         "hooks": [
           { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/mark-review.sh\"", "timeout": 5 }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "implementer|code-reviewer|tester|deployer|architect|feedback-observer|evolution-runner|progress-recorder",
+        "hooks": [
+          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/subagent-receipt-gate.sh\"", "timeout": 10 }
         ]
       }
     ],

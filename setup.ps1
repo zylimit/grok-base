@@ -267,8 +267,15 @@ $hooksJsonText = @'
       {
         "matcher": "Bash|run_terminal_command",
         "hooks": [
+          { "type": "command", "command": "bin/safe-shell.cmd", "timeout": 5 },
           { "type": "command", "command": "bin/block-pkill.cmd", "timeout": 5 },
           { "type": "command", "command": "bin/pre-commit-check.cmd", "timeout": 30 }
+        ]
+      },
+      {
+        "matcher": "Read|read_file|Edit|Write|MultiEdit|search_replace",
+        "hooks": [
+          { "type": "command", "command": "bin/secrets-guard.cmd", "timeout": 5 }
         ]
       },
       {
@@ -283,6 +290,14 @@ $hooksJsonText = @'
         "matcher": "Edit|Write|MultiEdit|search_replace",
         "hooks": [
           { "type": "command", "command": "bin/mark-review.cmd", "timeout": 5 }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "implementer|code-reviewer|tester|deployer|architect|feedback-observer|evolution-runner|progress-recorder",
+        "hooks": [
+          { "type": "command", "command": "bin/subagent-receipt-gate.cmd", "timeout": 10 }
         ]
       }
     ],

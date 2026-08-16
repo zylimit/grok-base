@@ -59,7 +59,8 @@ description: 当用户要求审查代码、红蓝对抗审查、检查质量、�
     --- Stage 0: 静态闸（机器先说话）---
     语义审查前先跑机械化静态检查。单模型审查（同模型、盲区重合）天生弱，靠模型无关的客观工具补偿——
     把 linter 能抓的问题挡在语义审查之前，别让审查者/人去挑机器该挑的。
-        执行： bash .grok/hooks/static-check.sh .   （识栈跑 shellcheck / ruff|py_compile / tsc）
+        执行： bash .grok/scripts/static-check.sh .   （识栈跑 shellcheck / ruff|py_compile / tsc；Windows: pwsh .grok/scripts/static-check.ps1）
+        如项目有 .grok/arch/boundaries.txt → 追加执行 bash .grok/scripts/arch-check.sh .（边界违规与静态错同级，红则停）
         - exit 0（全绿）→ 进 Stage 1
         - exit 1（有静态错）→ 停在 Stage 0，报告列出静态错误，主 Agent 派 bug-fixer 修绿后从 Stage 0 重审
         - 无对应栈/工具未装 → 跳过该栈（绝不因缺工具卡死）；项目有自带静态命令（如 lint:static）则优先用项目的
@@ -120,6 +121,10 @@ description: 当用户要求审查代码、红蓝对抗审查、检查质量、�
         - maintainability：文件大小、命名、耦合、重复逻辑、局部复杂度
         - release/package：安装清单、manifest、私密文件泄漏、版本一致性
         - windows：PowerShell ASCII、路径分隔符、Windows PowerShell 5.1 兼容性
+        - resilience：新增外呼有无超时/重试上限/降级；异常路径是否吞错；资源是否有泄漏点（连接/句柄/定时器）
+        - safety：破坏性操作（删除/覆盖/转账/物理控制）有无确认+幂等+可回滚；失效是否落安全侧
+        - privacy：日志/错误消息/埋点是否带出个人数据或密钥；新增采集字段是否在 Spec/NFR 声明过
+        项目有 NFR-Spec.md 时，resilience/safety/privacy lens 必须对照其条目逐项核，不许只凭直觉扫。
 
     [红蓝对抗模式]（用户显式要求或高风险变更使用）
         红蓝审查是本 Skill 的强化模式，不另建一套重复 Skill：

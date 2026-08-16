@@ -81,6 +81,15 @@ description: 当 Product-Spec.md 已完成且用户需要开发计划、Phase �
       - 例：聊天 UI 依赖消息数据库 → 数据库必须在聊天 UI 之前
       - 例：IM Bridge 依赖 Agent 引擎 → Agent 引擎必须在 IM 之前
 
+    - 架构与 NFR 基线（如有对应文档）：
+      - 有 Architecture.md / boundaries.txt → Phase 的文件规划必须落在声明边界内；新增跨边界依赖先走 arch-guardian 出 ADR，再排 Phase
+      - 有 NFR-Spec.md → 把五性条目分配到 Phase（哪个 Phase 交付超时/降级、哪个交付审计日志），验收标准里带上对应 NFR 编号
+      - 无架构文档但系统规模中大（多服务/多模块）→ 建议先派 architect（arch-guardian skill）出 Architecture.md 再定 Plan
+
+    - 大库前置（项目 >10 万行或 monorepo）：
+      - 无 docs/CODEMAP.md → 先走 repo-navigator 建图，Plan 的关键文件路径必须来自 CODEMAP 而非猜测
+      - 单 Task 预估波及 >20 文件 → 拆分；跨包改动标注建议 worktree 隔离派发
+
     **尽量分析**（有这些，Plan 更落地）：
 
     - 数据库设计：如项目需要数据库，梳理所有数据表、所属 Phase、用途。

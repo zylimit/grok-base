@@ -57,6 +57,22 @@ function Get-ToolCommand {
     return ''
 }
 
+function Get-ToolFilePaths {
+    $out = @()
+    try {
+        $ti = Get-HookToolInput
+        if ($null -ne $ti) {
+            foreach ($k in @('file_path', 'path', 'target_file')) {
+                if ($ti.PSObject.Properties.Name -contains $k) {
+                    $v = $ti.$k
+                    if ($v -is [string] -and $v.Length -gt 0) { $out += $v }
+                }
+            }
+        }
+    } catch { }
+    return $out
+}
+
 function Write-GrokDeny([string]$Reason) {
     try {
         @{ decision = 'deny'; reason = $Reason } | ConvertTo-Json -Compress | Write-Output

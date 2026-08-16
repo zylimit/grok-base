@@ -40,7 +40,13 @@ tool_file_paths() {
         .tool_input.file_path, .tool_input.path
       ] | map(select(type == "string" and length > 0)) | .[]
     ' 2>/dev/null || true
+    return 0
   fi
+  # Fallback without jq: extract common path keys so guards do not silently
+  # fail open (audit: implicit jq dependency).
+  printf '%s' "${HOOK_JSON:-}" \
+    | sed -n 's/.*"\(file_path\|path\|target_file\)"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\2/p' \
+    | head -5
 }
 
 deny() {

@@ -101,9 +101,21 @@ Windows 上 Grok 把 hook `command` 当**单个可执行路径** spawn：
 
 这些适配适合放在 **setup**，不要每次手工拷完再修。
 
+## v2：五性工程 + 架构看护 + 大库支持（纯原生）
+
+- **规则三层**：AGENTS.md（编排）+ `.grok/rules/`（五性红线/架构看护/大库纪律，官方 always-on 目录）+ Skills（按需规程）
+- **新 Skills**：`nfr-gatekeeper`（五性需求与门禁）、`threat-modeler`（STRIDE+DPIA）、`arch-guardian`（ADR/边界/防腐）、`repo-navigator`（CODEMAP/嵌套 AGENTS.md/LSP，百万行级）
+- **新角色**：architect（八个项目 Agent）
+- **硬约束三层**：`.grok/config.toml [permission]`（密钥 deny、push/publish ask，不 fail-open）＋ hooks（safe-shell/secrets-guard/回执门禁）＋ `.grok/sandbox.toml`（内核级，`grok --sandbox grok-secure`）
+- **门禁脚本**：`static-check`、`arch-check`（读 `.grok/arch/boundaries.txt`）、`codemap`、`ci-review`（headless CI 门禁）
+- 原生能力映射与边界：[docs/GROK-NATIVE-MAP.md](docs/GROK-NATIVE-MAP.md)
+
+自检：`grok inspect` 应列出 rules 3 份、skills 18 个、hooks 已加载、permission 生效。
+
 ## 维护者文档
 
 - [架构](docs/ARCHITECTURE.md)
+- [原生能力映射](docs/GROK-NATIVE-MAP.md)
 - [能力矩阵](docs/CAPABILITY-MATRIX.md)
 - [角色契约](docs/ROLE-CONTRACTS.md)
 - [借鉴边界](docs/INSPIRATION-BOUNDARY.md)

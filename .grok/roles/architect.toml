@@ -1,0 +1,4 @@
+# Architect role — architecture design, ADR, boundary guard
+description = "Architecture design and guardianship. Uses arch-guardian / threat-modeler skills."
+default_capability_mode = "all"
+default_isolation = "none"

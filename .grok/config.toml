@@ -1,0 +1,38 @@
+# Grok Base project config (official project scope: permission rules / MCP / plugins).
+# Permission evaluation: deny > ask > allow, merged across scopes; deny cannot be
+# overridden and still applies in always-approve mode (as do segment-matched asks).
+
+[permission]
+
+# Hard denies: secret material (covers read_file, grep, and file args of shell
+# commands per official semantics). Layered with hooks/bin/secrets-guard.*
+deny = [
+  "Read(**/.env)",
+  "Edit(**/.env)",
+  "Read(**/*.pem)",
+  "Edit(**/*.pem)",
+  "Read(**/id_rsa)",
+  "Read(**/id_ed25519)",
+  "Read(**/.ssh/**)",
+  "Edit(**/.ssh/**)",
+  "Read(**/.aws/**)",
+  "Edit(**/.aws/**)",
+  "Read(**/.gnupg/**)",
+  "Edit(**/.gnupg/**)",
+]
+
+# HIGH-tier actions always prompt, even in always-approve (segment-matched ask):
+# remote side effects stay behind explicit user approval (AGENTS.md 审批三档).
+ask = [
+  "Bash(git push*)",
+  "Bash(npm publish*)",
+  "Bash(pnpm publish*)",
+  "Bash(yarn publish*)",
+  "Bash(cargo publish*)",
+  "Bash(twine upload*)",
+  "Bash(docker push*)",
+  "Bash(gh release*)",
+  "Bash(kubectl apply*)",
+  "Bash(kubectl delete*)",
+  "Bash(terraform apply*)",
+]

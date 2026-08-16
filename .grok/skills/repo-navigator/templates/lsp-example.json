@@ -1,0 +1,25 @@
+{
+  "$comment": "示例：拷到项目根 .grok/lsp.json 并按实际语言删改（本 $comment 键会被忽略，建议删除）。语言服务需自行安装并在 PATH 可用。被动诊断有此文件即生效；主动 lsp 工具需 GROK_LSP_TOOLS=1 或用户 config.toml 设 [features] lsp_tools = true。repo 级 LSP 受文件夹信任约束（/hooks-trust）。",
+  "typescript": {
+    "command": "typescript-language-server",
+    "args": ["--stdio"],
+    "extensionToLanguage": {
+      ".ts": "typescript",
+      ".tsx": "typescriptreact",
+      ".js": "javascript",
+      ".jsx": "javascriptreact"
+    },
+    "startupTimeout": 30000
+  },
+  "rust": {
+    "command": "rust-analyzer",
+    "extensionToLanguage": { ".rs": "rust" },
+    "startupTimeout": 60000
+  },
+  "python": {
+    "command": "pyright-langserver",
+    "args": ["--stdio"],
+    "extensionToLanguage": { ".py": "python" },
+    "startupTimeout": 30000
+  }
+}

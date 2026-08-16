@@ -1,0 +1,9 @@
+# Architecture boundary rules (checked by .grok/scripts/arch-check.sh / .ps1).
+# Format (one per line):  deny <path-glob> -> <regex>
+# Semantics: inside files matching <path-glob>, any line matching <regex> is a violation.
+# Keep rules few and real -- each one should mirror a boundary declared in Architecture.md.
+#
+# Examples (uncomment and adapt to your project):
+# deny src/domain/** -> from ['"].*/((api|routes|controllers))/
+# deny src/ui/** -> (import|require)\(?['"].*/(db|repositories)/
+# deny packages/shared/** -> (import|require)\(?['"](react|express)

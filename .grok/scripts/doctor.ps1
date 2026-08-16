@@ -25,7 +25,7 @@ if (Test-Path -LiteralPath 'AGENTS.md') { Ok 'AGENTS.md exists' } else { Bad 'AG
 # .grok tree
 if (Test-Path -LiteralPath '.grok') { Ok '.grok exists' } else { Bad '.grok missing'; exit 1 }
 
-$roles = @('implementer','code-reviewer','tester','deployer','feedback-observer','evolution-runner','progress-recorder')
+$roles = @('architect','implementer','code-reviewer','tester','deployer','feedback-observer','evolution-runner','progress-recorder')
 foreach ($r in $roles) {
     if (Test-Path -LiteralPath ".grok\agents\$r.md") { Ok "agent $r" } else { Bad "agent $r missing" }
     if (Test-Path -LiteralPath ".grok\roles\$r.toml") { Ok "role $r" } else { Bad "role $r missing" }

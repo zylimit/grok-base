@@ -1,0 +1,22 @@
+# Project sandbox profiles (official .grok/sandbox.toml).
+# OS-level enforcement: Landlock (Linux >= 5.13) / Seatbelt (macOS); not on Windows.
+# Off by default -- opt in per session:  grok --sandbox grok-secure
+# Linux glob-deny requires bubblewrap; kernel-denied paths are unreadable even
+# via bash/grep/subagents, and the sandbox is irreversible for the session.
+
+[profiles.grok-secure]
+# Everyday development with kernel-enforced secret protection.
+extends = "workspace"
+deny = [
+  "**/.env",
+  "**/*.pem",
+  "**/*.p12",
+  "**/*.pfx",
+  "**/id_rsa",
+  "**/id_ed25519",
+]
+
+[profiles.grok-review]
+# Untrusted-code review: read broadly, write nothing, no child network (Linux).
+extends = "read-only"
+restrict_network = true

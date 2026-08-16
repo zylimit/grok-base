@@ -42,6 +42,7 @@ Evidence:
 
 | Role | Owns | Does not own |
 |---|---|---|
+| architect | Architecture.md / ADR / boundaries / drift verdict | Business code edits, review approval |
 | implementer | Scoped implementation | Review approval, deploy |
 | code-reviewer | Evidence-backed review | Business code fixes |
 | tester | Independent tests + runner output | Business code under test |
