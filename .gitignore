@@ -12,14 +12,19 @@
 !/progress.md
 !/setup.ps1
 !/setup.sh
+!/.grok-plugin/
+!/plugins/
 
 # Runtime state under .grok (scaffold conventions)
 .grok/.fast-mode
+.grok/.fast-mode.corrupt-*
 .grok/.needs-review
+.grok/.needs-review.corrupt-*
 .grok/.needs-review.lock
 .grok/.stop-reminder
 .grok/.feedback-signal
 .grok/config.local.toml
+.grok/hooks/gate-log.tsv
 
 # Local work
 /.pr/

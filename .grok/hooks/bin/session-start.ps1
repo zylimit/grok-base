@@ -1,11 +1,66 @@
 # SessionStart: Fast Mode, pending review, feedback, dirty tree
 # Passive hook: always exit 0 so Grok never red-bars session start.
+# Corrupt .needs-review / .fast-mode are quarantined, never silently rebuilt.
 $ErrorActionPreference = 'Continue'
 try { $global:PSNativeCommandUseErrorActionPreference = $false } catch { }
+
+function Test-StateUnreadableOrBinary([string]$path) {
+    try {
+        if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { return $false }
+        $fs = [IO.File]::Open($path, 'Open', 'Read', 'ReadWrite')
+        try {
+            $buf = New-Object byte[] 8192
+            while (($n = $fs.Read($buf, 0, $buf.Length)) -gt 0) {
+                for ($i = 0; $i -lt $n; $i++) {
+                    if ($buf[$i] -eq [byte]0) { return $true }
+                }
+            }
+        } finally { $fs.Dispose() }
+        return $false
+    } catch {
+        return $true
+    }
+}
+
+function Test-FastModeHasValidExpiry([string]$path) {
+    try {
+        $hit = Get-Content -LiteralPath $path -ErrorAction Stop |
+            Where-Object { $_ -match '^expires_epoch=\d+$' } |
+            Select-Object -First 1
+        return [bool]$hit
+    } catch {
+        return $false
+    }
+}
+
+function Move-CorruptState([string]$root, [string]$src) {
+    $name = [IO.Path]::GetFileName($src)
+    $epoch = [int64]([DateTimeOffset]::UtcNow.ToUnixTimeSeconds())
+    $dest = Join-Path (Join-Path $root '.grok') "$name.corrupt-$epoch"
+    try {
+        Move-Item -LiteralPath $src -Destination $dest -Force -ErrorAction Stop
+        Write-Output "QUARANTINED: $src -> $dest (corrupt; not rebuilt)"
+    } catch {
+        Write-Output "QUARANTINED: failed to move $src"
+    }
+}
+
 try {
     . (Join-Path $PSScriptRoot 'lib.ps1')
     $root = Get-ProjectRoot
     $flag = Get-FastModeFlagPath
+    $state = Join-Path $root '.grok\.needs-review'
+
+    if (Test-Path -LiteralPath $state -PathType Leaf) {
+        if (Test-StateUnreadableOrBinary $state) {
+            Move-CorruptState $root $state
+        }
+    }
+    if (Test-Path -LiteralPath $flag -PathType Leaf) {
+        if ((Test-StateUnreadableOrBinary $flag) -or -not (Test-FastModeHasValidExpiry $flag)) {
+            Move-CorruptState $root $flag
+        }
+    }
 
     if (Test-FastModeActive) {
         $left = Get-FastModeRemainingMinutes
@@ -18,7 +73,6 @@ try {
     }
 
     try {
-        $state = Join-Path $root '.grok\.needs-review'
         if (Test-Path -LiteralPath $state) {
             $files = @(Get-Content -LiteralPath $state -ErrorAction SilentlyContinue |
                 Where-Object { $_.Trim() -and $_ -ne 'clean' })

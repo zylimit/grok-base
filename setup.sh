@@ -78,8 +78,10 @@ while IFS= read -r -d '' src; do
   case "$rel" in
     FRAMEWORK-MANIFEST.txt) continue ;;
     hooks/project-hooks.json) continue ;;  # regenerated for Unix
+    hooks/bin/*.cmd) continue ;;           # Windows-only; Unix surface is bin/*.sh
     settings.local.json|config.local.toml) continue ;;
     .needs-review|.needs-review.lock|.fast-mode|.stop-reminder|.feedback-signal) continue ;;
+    .needs-review.corrupt-*|.fast-mode.corrupt-*|hooks/gate-log.tsv) continue ;;
     .subagent-reminded|.tdd-exempt|.red-verified|.static-gate|.degraded-review) continue ;;
     signals.jsonl|*/signals.jsonl) continue ;;
     evidence/*) continue ;;
@@ -113,7 +115,7 @@ find "$TARGET_GROK/hooks/bin" -type f -name '*.sh' -exec chmod 0755 {} \; 2>/dev
 find "$TARGET_GROK/scripts" -type f -name '*.sh' -exec chmod 0755 {} \; 2>/dev/null || true
 ok '.grok framework files copied'
 
-# Unix hooks JSON (bash .sh entrypoints)
+# Unix hooks JSON: command is relative to project-hooks.json (official Grok spawn)
 HOOKS_JSON="$TARGET_GROK/hooks/project-hooks.json"
 mkdir -p "$(dirname "$HOOKS_JSON")"
 if [ -f "$HOOKS_JSON" ]; then
@@ -125,15 +127,15 @@ cat >"$HOOKS_JSON" <<'EOF'
     "SessionStart": [
       {
         "hooks": [
-          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/session-start.sh\"", "timeout": 10 },
-          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/session-rules-banner.sh\"", "timeout": 5 }
+          { "type": "command", "command": "bin/session-start.sh", "timeout": 10 },
+          { "type": "command", "command": "bin/session-rules-banner.sh", "timeout": 5 }
         ]
       }
     ],
     "UserPromptSubmit": [
       {
         "hooks": [
-          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/detect-feedback.sh\"", "timeout": 5 }
+          { "type": "command", "command": "bin/detect-feedback.sh", "timeout": 5 }
         ]
       }
     ],
@@ -141,21 +143,22 @@ cat >"$HOOKS_JSON" <<'EOF'
       {
         "matcher": "Bash|run_terminal_command",
         "hooks": [
-          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/safe-shell.sh\"", "timeout": 5 },
-          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/block-pkill.sh\"", "timeout": 5 },
-          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/pre-commit-check.sh\"", "timeout": 30 }
+          { "type": "command", "command": "bin/safe-shell.sh", "timeout": 5 },
+          { "type": "command", "command": "bin/secret-exfil.sh", "timeout": 5 },
+          { "type": "command", "command": "bin/block-pkill.sh", "timeout": 5 },
+          { "type": "command", "command": "bin/pre-commit-check.sh", "timeout": 30 }
         ]
       },
       {
         "matcher": "Read|read_file|Edit|Write|MultiEdit|search_replace",
         "hooks": [
-          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/secrets-guard.sh\"", "timeout": 5 }
+          { "type": "command", "command": "bin/secrets-guard.sh", "timeout": 5 }
         ]
       },
       {
         "matcher": "Edit|Write|MultiEdit|search_replace",
         "hooks": [
-          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/no-direct-code-guard.sh\"", "timeout": 5 }
+          { "type": "command", "command": "bin/no-direct-code-guard.sh", "timeout": 5 }
         ]
       }
     ],
@@ -163,7 +166,7 @@ cat >"$HOOKS_JSON" <<'EOF'
       {
         "matcher": "Edit|Write|MultiEdit|search_replace",
         "hooks": [
-          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/mark-review.sh\"", "timeout": 5 }
+          { "type": "command", "command": "bin/mark-review.sh", "timeout": 5 }
         ]
       }
     ],
@@ -171,21 +174,34 @@ cat >"$HOOKS_JSON" <<'EOF'
       {
         "matcher": "implementer|code-reviewer|tester|deployer|architect|feedback-observer|evolution-runner|progress-recorder",
         "hooks": [
-          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/subagent-receipt-gate.sh\"", "timeout": 10 }
+          { "type": "command", "command": "bin/subagent-receipt-gate.sh", "timeout": 10 }
         ]
       }
     ],
     "Stop": [
       {
         "hooks": [
-          { "type": "command", "command": "bash \"${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/stop-reminder.sh\"", "timeout": 5 }
+          { "type": "command", "command": "bin/stop-reminder.sh", "timeout": 5 }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          { "type": "command", "command": "bin/precompact-keep.sh", "timeout": 5 }
         ]
       }
     ]
   }
 }
 EOF
-ok 'project-hooks.json written (Unix bash entrypoints)'
+ok 'project-hooks.json written (bin/*.sh relative to JSON)'
+# Business-repo Unix surface: leftover Windows .cmd must go (skip-copy is not enough on upgrade).
+# Never delete source-repo .cmd when installing onto grok-base itself.
+if [ "$TARGET" != "$SCRIPT_DIR" ]; then
+  rm -f "$TARGET_GROK/hooks/bin"/*.cmd
+fi
+find "$TARGET_GROK/hooks/bin" -type f -name '*.sh' -exec chmod 0755 {} \; 2>/dev/null || true
 
 # Reset feedback index
 FB_TPL="$SRC_GROK/feedback/templates/feedback-index-template.md"

@@ -3,6 +3,7 @@
 - 状态：Proposed | Accepted | Superseded by ADR-{NNN}
 - 日期：{date}
 - 决策人：{用户/角色}
+- Enforced-by：{arch-check|fitness|tests/...|具体脚本}
 
 ## 背景
 

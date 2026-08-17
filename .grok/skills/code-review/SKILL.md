@@ -60,10 +60,13 @@ description: 当用户要求审查代码、红蓝对抗审查、检查质量、�
     语义审查前先跑机械化静态检查。单模型审查（同模型、盲区重合）天生弱，靠模型无关的客观工具补偿——
     把 linter 能抓的问题挡在语义审查之前，别让审查者/人去挑机器该挑的。
         执行： bash .grok/scripts/static-check.sh .   （识栈跑 shellcheck / ruff|py_compile / tsc；Windows: pwsh .grok/scripts/static-check.ps1）
+        随后跑 bash .grok/scripts/fitness.sh .（五性反模式；红则停 Stage 0）
+        如存在 docs/adr/ → 再跑 bash .grok/scripts/adr-check.sh .（幽灵引用 / 缺 Enforced-by 红则停）
         如项目有 .grok/arch/boundaries.txt → 追加执行 bash .grok/scripts/arch-check.sh .（边界违规与静态错同级，红则停）
         - exit 0（全绿）→ 进 Stage 1
-        - exit 1（有静态错）→ 停在 Stage 0，报告列出静态错误，主 Agent 派 bug-fixer 修绿后从 Stage 0 重审
+        - exit 1（有静态错 / fitness / adr-check 红）→ 停在 Stage 0，报告列出错误，主 Agent 派 bug-fixer 修绿后从 Stage 0 重审
         - 无对应栈/工具未装 → 跳过该栈（绝不因缺工具卡死）；项目有自带静态命令（如 lint:static）则优先用项目的
+        写 `.grok/.needs-review` 为单独一行 `clean` 之前：逐行核对该文件。行内有 TAB 指纹且文件仍在时，当场重算 fingerprint（`git hash-object`，失败则 sha256）；与记录不一致则禁止写 clean，必须先重审（`REVIEW STALE`）。旧格式无 TAB 视为无指纹，本轮审完可覆盖登记。
 
     --- Stage 1: Spec Compliance（做对了没有？）---
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # PreToolUse (Bash): deny catastrophic/destructive command patterns.
 # Safety guardrail; never bypassed by Fast Mode. Fail-open by design elsewhere,
 # so this script must emit an explicit deny to block.

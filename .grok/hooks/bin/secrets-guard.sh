@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # PreToolUse (Read/Edit/Write): deny direct access to secret material.
 # Privacy/Security guardrail; never bypassed by Fast Mode.
 set -u

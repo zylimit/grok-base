@@ -107,6 +107,7 @@ $skipNames = @(
     'config.local.toml',
     '.needs-review', '.needs-review.lock',
     '.fast-mode', '.stop-reminder', '.feedback-signal',
+    'gate-log.tsv',
     '.subagent-reminded', '.tdd-exempt', '.red-verified', '.static-gate', '.degraded-review',
     'signals.jsonl'
 )
@@ -114,6 +115,7 @@ $skipNames = @(
 function Test-ShouldSkip([string]$relSlash) {
     $leaf = Split-Path $relSlash -Leaf
     if ($skipNames -contains $leaf) { return $true }
+    if ($leaf -like '.needs-review.corrupt-*' -or $leaf -like '.fast-mode.corrupt-*') { return $true }
     if ($relSlash -match '\.(bak|framework-new)$') { return $true }
     if ($relSlash -match '^feedback/[^/]+\.md$') { return $true }  # private feedback + INDEX (reset later)
     if ($relSlash -match '^evidence/') { return $true }
@@ -179,11 +181,11 @@ if (-not (Test-Path -LiteralPath $binDir)) {
 $hookNames = @(
     'session-start', 'session-rules-banner', 'detect-feedback',
     'block-pkill', 'pre-commit-check', 'no-direct-code-guard',
-    'mark-review', 'stop-reminder'
+    'mark-review', 'stop-reminder', 'secret-exfil', 'precompact-keep'
 )
 # Passive hooks: always process-exit 0 (never red-bar SessionStart/Stop/etc.)
 # Blocking hooks: preserve exit 2 (deny); other non-zero fail-open allow + exit 0
-$passiveHooks = @('session-start', 'session-rules-banner', 'detect-feedback', 'mark-review', 'stop-reminder')
+$passiveHooks = @('session-start', 'session-rules-banner', 'detect-feedback', 'mark-review', 'stop-reminder', 'precompact-keep')
 foreach ($h in $hookNames) {
     $cmdPath = Join-Path $binDir "$h.cmd"
     $ps1Path = Join-Path $binDir "$h.ps1"
@@ -268,6 +270,7 @@ $hooksJsonText = @'
         "matcher": "Bash|run_terminal_command",
         "hooks": [
           { "type": "command", "command": "bin/safe-shell.cmd", "timeout": 5 },
+          { "type": "command", "command": "bin/secret-exfil.cmd", "timeout": 5 },
           { "type": "command", "command": "bin/block-pkill.cmd", "timeout": 5 },
           { "type": "command", "command": "bin/pre-commit-check.cmd", "timeout": 30 }
         ]
@@ -305,6 +308,13 @@ $hooksJsonText = @'
       {
         "hooks": [
           { "type": "command", "command": "bin/stop-reminder.cmd", "timeout": 5 }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          { "type": "command", "command": "bin/precompact-keep.cmd", "timeout": 5 }
         ]
       }
     ]

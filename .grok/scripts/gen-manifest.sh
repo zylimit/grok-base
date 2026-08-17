@@ -17,6 +17,7 @@ while IFS= read -r -d '' src; do
     FRAMEWORK-MANIFEST.txt|hooks/project-hooks.json) continue ;;
     settings.local.json|config.local.toml) continue ;;
     .needs-review|.needs-review.lock|.fast-mode|.stop-reminder|.feedback-signal) continue ;;
+    .needs-review.corrupt-*|.fast-mode.corrupt-*|hooks/gate-log.tsv) continue ;;
     signals.jsonl|*/signals.jsonl) continue ;;
     evidence/*) continue ;;
     *.bak|*.framework-new) continue ;;

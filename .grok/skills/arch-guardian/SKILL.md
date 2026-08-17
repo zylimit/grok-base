@@ -50,6 +50,7 @@ when-to-use: 架构设计、架构评审、ADR、架构决策、模块边界、�
        — 违规清单直接进报告，红则先裁决再谈其他
        债务棘轮（棕地接入）：老仓存量违规先 `--baseline-write` 登记为 legacy（基线文件提交进 Git、可评审），
        此后**旧债不挡路、新债零容忍**；还清旧债后重写基线收缩。基线只许缩不许扩（扩=新违规，须走 ADR）。
+       随后跑 `bash .grok/scripts/adr-check.sh`（有 docs/adr 才有活；缺 Enforced-by / 幽灵引用红则先修引用）
     2. ADR 合规：逐条 Accepted ADR，抽查实现是否仍遵守；被绕过的标 ⚡ 漂移
     3. 结构体检（fitness 快查）：
        - 新增循环依赖迹象（互相 import 的模块对）

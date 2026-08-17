@@ -32,6 +32,31 @@ foreach ($r in $roles) {
     if (Test-Path -LiteralPath ".grok\personas\$r.toml") { Ok "persona $r" } else { Bad "persona $r missing" }
 }
 
+foreach ($s in @('static-check', 'arch-check', 'codemap', 'fitness', 'adr-check')) {
+    if (Test-Path -LiteralPath ".grok\scripts\$s.sh") { Ok "script $s.sh" } else { Bad "script $s.sh missing" }
+}
+if (Test-Path -LiteralPath '.grok\scripts\test-setup.sh') { Ok 'script test-setup.sh' }
+foreach ($s in @('adapters', 'prune', 'release-scan', 'gate-audit')) {
+    if (Test-Path -LiteralPath ".grok\scripts\$s.sh") { Ok "script $s.sh" }
+}
+
+$hasArch = $false
+if (Test-Path -LiteralPath 'Architecture.md') { $hasArch = $true }
+if (Test-Path -LiteralPath 'docs\adr' -PathType Container) {
+    if (@(Get-ChildItem 'docs\adr\*.md' -File -ErrorAction SilentlyContinue).Count -gt 0) { $hasArch = $true }
+}
+if ($hasArch) {
+    $b = '.grok\arch\boundaries.txt'
+    if (-not (Test-Path -LiteralPath $b)) {
+        Note 'ARCH_UNWIRED: Architecture.md/docs/adr present but .grok/arch/boundaries.txt missing'
+    } else {
+        $live = @(Get-Content -LiteralPath $b -ErrorAction SilentlyContinue | Where-Object { $_.Trim() -and -not $_.TrimStart().StartsWith('#') })
+        if ($live.Count -eq 0) {
+            Note 'ARCH_UNWIRED: Architecture.md/docs/adr present but boundaries.txt has no live rules'
+        }
+    }
+}
+
 $skills = @(Get-ChildItem '.grok\skills' -Directory -ErrorAction SilentlyContinue)
 if ($skills.Count -ge 10) { Ok "skills count=$($skills.Count)" } else { Bad "skills count low: $($skills.Count)" }
 foreach ($s in $skills) {

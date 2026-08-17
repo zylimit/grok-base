@@ -15,9 +15,14 @@
 | Test | test-builder + tester（五性用例） |
 | Release | release-builder + deployer（五性发布门禁） |
 | CI 门禁 | `.grok/scripts/ci-review.sh`（headless 只读评审） |
+| 五性/ADR 机器闸 | `.grok/scripts/fitness.*`、`adr-check.*`；hooks `secret-exfil` + `precompact-keep`；默认 `.grok/lsp.json` |
 | Feedback / evolution | feedback-writer, evolution-engine |
 | Project memory | progress-recorder → progress.md |
 | Fast Mode | `.grok/scripts/fast-mode.*` |
 | Safety | hooks（PreToolUse/SubagentStop）+ `.grok/config.toml [permission]` + `.grok/sandbox.toml` |
+| Slash 门禁 | `.grok/commands/`（recap / fitness / arch-check / nfr-gate / adapters / gate-audit） |
+| 适配器/留存/出包/闸审计 | `.grok/scripts/adapters.*`、`prune.*`、`release-scan.*`、`gate-audit.*`（策展探测 / dry-run 销毁 / 产物扫 / deny 计数） |
+| 固定编排 | `.grok/workflows/*.rhai`（review-changes / nfr-gate / codemap-scan） |
+| 并行隔离 | worktree-parallel + [docs/ISOLATION.md](ISOLATION.md)（hooks ≠ sandbox） |
 
-Counts: 18 Skills, 8 project agents, 1 orchestrator (`AGENTS.md` + 3 rules).
+Counts: 19 Skills, 8 project agents, 1 orchestrator (`AGENTS.md` + 3 rules).

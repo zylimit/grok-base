@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # UserPromptSubmit: record a local signal file when correction phrases appear.
 set -u
 BIN_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)

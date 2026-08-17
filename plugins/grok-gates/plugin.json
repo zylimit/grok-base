@@ -1,0 +1,5 @@
+{
+  "name": "grok-gates",
+  "version": "2.0.4",
+  "description": "门禁命令（/recap /fitness /arch-check /nfr-gate）。完整脚手架仍是 AGENTS.md + .grok + setup.sh。本 plugin 不含 hooks，避免与项目 .grok/hooks 双跑。"
+}

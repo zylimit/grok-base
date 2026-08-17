@@ -22,9 +22,11 @@ function Test-Skip([string]$rel) {
         'FRAMEWORK-MANIFEST.txt', 'project-hooks.json',
         'settings.local.json', 'config.local.toml',
         '.needs-review', '.needs-review.lock', '.fast-mode', '.stop-reminder', '.feedback-signal',
+        'gate-log.tsv',
         'signals.jsonl'
     )
     if ($skip -contains $leaf) { return $true }
+    if ($leaf -match '\.corrupt-\d+$') { return $true }
     if ($rel -match '\.(bak|framework-new)$') { return $true }
     if ($rel -match '^feedback/[^/]+\.md$') { return $true }
     if ($rel -match '^evidence/') { return $true }

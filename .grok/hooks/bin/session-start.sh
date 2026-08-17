@@ -1,5 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # SessionStart: surface Fast Mode, pending review, feedback signal, dirty tree.
+# Corrupt .needs-review / .fast-mode are quarantined, never silently rebuilt.
 set -u
 BIN_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
 # shellcheck source=lib.sh
@@ -7,6 +8,49 @@ BIN_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
 
 ROOT=$(project_root) || exit 0
 FLAG=$(fast_mode_flag)
+STATE="$ROOT/.grok/.needs-review"
+
+is_unreadable_or_binary() {
+  local f=$1 raw stripped
+  [ -f "$f" ] || return 1
+  if ! cat "$f" >/dev/null 2>&1; then
+    return 0
+  fi
+  raw=$(wc -c < "$f" | tr -d ' ')
+  stripped=$(tr -d '\0' < "$f" | wc -c | tr -d ' ')
+  [ "$raw" != "$stripped" ]
+}
+
+fast_mode_has_valid_expiry() {
+  local flag=$1 expiry
+  expiry=$(sed -n 's/^expires_epoch=//p' "$flag" 2>/dev/null | head -1)
+  case "$expiry" in
+    ''|*[!0-9]*) return 1 ;;
+    *) return 0 ;;
+  esac
+}
+
+quarantine_state() {
+  local src=$1 name dest epoch
+  name=$(basename -- "$src")
+  epoch=$(date +%s) || return 1
+  dest="$ROOT/.grok/${name}.corrupt-${epoch}"
+  if mv -- "$src" "$dest"; then
+    printf 'QUARANTINED: %s -> %s (corrupt; not rebuilt)\n' "$src" "$dest"
+  else
+    printf 'QUARANTINED: failed to move %s\n' "$src" >&2
+  fi
+}
+
+if [ -f "$STATE" ] && is_unreadable_or_binary "$STATE"; then
+  quarantine_state "$STATE"
+fi
+
+if [ -f "$FLAG" ]; then
+  if is_unreadable_or_binary "$FLAG" || ! fast_mode_has_valid_expiry "$FLAG"; then
+    quarantine_state "$FLAG"
+  fi
+fi
 
 if fast_mode_active; then
   expiry=$(sed -n 's/^expires_epoch=//p' "$FLAG" | head -1)
@@ -19,7 +63,6 @@ else
   printf '%s\n' 'FAST-MODE OFF: normal quality workflow is active.'
 fi
 
-STATE="$ROOT/.grok/.needs-review"
 if [ -f "$STATE" ]; then
   FILES=$(grep -vE '^[[:space:]]*$' "$STATE" 2>/dev/null | grep -vx "clean" || true)
   if [ -n "$FILES" ]; then

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # SubagentStop (project agents): require the unified result envelope.
 # Blocks the subagent's stop ONCE if the reply lacks "Status:"; second pass
 # always lets it stop (stopHookActive check) so it can never loop.

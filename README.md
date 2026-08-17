@@ -27,19 +27,26 @@ pwsh -File D:\Code\grok-base\setup.ps1
 
 ### Unix / macOS
 
+源仓默认 `project-hooks.json` 已是 `bin/*.sh`（相对 JSON）。Linux 克隆或拷贝 `AGENTS.md` + `.grok/` 后直接打开 Grok 即可。
+
+业务仓也可用安装脚本（只装 `bin/*.sh`，不拷 `.cmd`）：
+
 ```bash
 ./setup.sh /path/to/your-project
 ```
 
-Unix 会把 hooks 写成 `bash "${GROK_WORKSPACE_ROOT}/.grok/hooks/bin/*.sh"`。
-
 ## 快速路径：纯拷贝
+
+```bash
+# Linux：源仓 JSON 已是 bin/*.sh，拷贝即可
+cp -a AGENTS.md .grok /path/to/your-project/
+```
 
 ```powershell
 Copy-Item -Recurse AGENTS.md, .grok D:\path\to\your-project\
 ```
 
-适合试用。**Windows 正式项目请用 setup.ps1**（hooks 适配是安装器的核心价值，见 cc-base 同款结论）。
+适合试用。**Windows 正式项目必须用 setup.ps1** 写 hardened `bin/*.cmd`。
 
 ## 自检
 
@@ -50,6 +57,17 @@ pwsh -File .grok\scripts\doctor.ps1 -Target .
 ```bash
 bash .grok/scripts/doctor.sh .
 ```
+
+## 官方 plugin（可选，薄门禁命令）
+
+完整脚手架仍是 `AGENTS.md` + `.grok/` + `setup.sh`。plugin **不含 hooks**（避免和项目 `.grok/hooks` 双跑）。
+
+```bash
+grok plugin marketplace add /path/to/grok-base
+grok plugin install grok-gates
+```
+
+信任/hooks 另说。plugin 在仓根，不会被 setup 拷进业务仓。
 
 ## 升级
 
@@ -80,6 +98,8 @@ target/
     ├── skills/ agents/ roles/ personas/
     ├── hooks/          # project-hooks.json + bin/*
     ├── scripts/        # doctor, fast-mode, gen-manifest
+    ├── commands/       # slash: recap, fitness, arch-check, nfr-gate
+    ├── workflows/      # review-changes, nfr-gate, codemap-scan
     ├── feedback/
     ├── EVOLUTION.md
     └── FRAMEWORK-MANIFEST.txt
@@ -110,7 +130,8 @@ Windows 上 Grok 把 hook `command` 当**单个可执行路径** spawn：
 - **门禁脚本**：`static-check`、`arch-check`（读 `.grok/arch/boundaries.txt`）、`codemap`、`ci-review`（headless CI 门禁）
 - 原生能力映射与边界：[docs/GROK-NATIVE-MAP.md](docs/GROK-NATIVE-MAP.md)
 
-自检：`grok inspect` 应列出 rules 3 份、skills 18 个、hooks 已加载、permission 生效。
+自检：`grok inspect` 应列出 rules 3 份、skills 19 个、hooks 已加载、permission 生效。
+Slash：`.grok/commands/`（`/recap` `/fitness` `/arch-check` `/nfr-gate`）。编排：`.grok/workflows/*.rhai`。隔离档位：[docs/ISOLATION.md](docs/ISOLATION.md)。
 
 ## 维护者文档
 

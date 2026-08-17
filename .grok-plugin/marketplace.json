@@ -1,0 +1,17 @@
+{
+  "name": "Grok Base",
+  "description": "Gate slash commands for Grok Base. Full scaffold remains AGENTS.md + .grok + setup.sh.",
+  "owner": {
+    "name": "Grok Base"
+  },
+  "plugins": [
+    {
+      "name": "grok-gates",
+      "description": "五性/架构门禁 slash 命令。不含 hooks（避免与项目 .grok/hooks 双跑）。完整脚手架仍是 AGENTS.md + .grok + setup.sh。",
+      "source": {
+        "type": "local",
+        "path": "./plugins/grok-gates"
+      }
+    }
+  ]
+}

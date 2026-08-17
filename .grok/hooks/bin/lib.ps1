@@ -73,7 +73,27 @@ function Get-ToolFilePaths {
     return $out
 }
 
+function Add-GrokGateLog([string]$Reason) {
+    # Fail-open: never throw, never write to stdout.
+    try {
+        $root = Get-ProjectRoot
+        if (-not $root) { return }
+        $log = Join-Path $root '.grok\hooks\gate-log.tsv'
+        $dir = Split-Path -Parent $log
+        if (-not (Test-Path -LiteralPath $dir)) {
+            New-Item -ItemType Directory -Path $dir -Force | Out-Null
+        }
+        $hook = if ($env:GROK_HOOK_NAME) { $env:GROK_HOOK_NAME } else { 'unknown' }
+        $ts = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+        $san = (($Reason -replace '[\t\r\n]', ' ').Trim())
+        if ($san.Length -gt 240) { $san = $san.Substring(0, 240) }
+        $line = "{0}`t{1}`tdeny`t{2}" -f $ts, $hook, $san
+        Add-Content -LiteralPath $log -Value $line -Encoding utf8 -ErrorAction SilentlyContinue
+    } catch { }
+}
+
 function Write-GrokDeny([string]$Reason) {
+    try { Add-GrokGateLog $Reason } catch { }
     try {
         @{ decision = 'deny'; reason = $Reason } | ConvertTo-Json -Compress | Write-Output
     } catch {
@@ -119,4 +139,37 @@ function Get-FastModeRemainingMinutes {
     } catch {
         return $null
     }
+}
+
+if (-not $env:GROK_HOOK_NAME) {
+    try {
+        $stack = Get-PSCallStack
+        $caller = $null
+        if ($stack.Count -gt 1) { $caller = $stack[1].ScriptName }
+        if ($caller) {
+            $env:GROK_HOOK_NAME = [IO.Path]::GetFileNameWithoutExtension($caller)
+        } else {
+            $env:GROK_HOOK_NAME = 'unknown'
+        }
+    } catch {
+        $env:GROK_HOOK_NAME = 'unknown'
+    }
+}
+
+# Blob fingerprint for .needs-review: git hash-object, else SHA256.
+function Get-ReviewFingerprint([string]$root, [string]$abs) {
+    try {
+        if (Get-Command git -ErrorAction SilentlyContinue) {
+            & git -C $root rev-parse --is-inside-work-tree 2>$null | Out-Null
+            if ($LASTEXITCODE -eq 0) {
+                $h = & git -C $root hash-object -- $abs 2>$null
+                if ($LASTEXITCODE -eq 0 -and $h) { return ([string]$h).Trim() }
+            }
+        }
+    } catch { }
+    try {
+        $hash = Get-FileHash -LiteralPath $abs -Algorithm SHA256 -ErrorAction Stop
+        if ($hash -and $hash.Hash) { return $hash.Hash.ToLowerInvariant() }
+    } catch { }
+    return $null
 }

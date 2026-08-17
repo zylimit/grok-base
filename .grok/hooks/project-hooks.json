@@ -3,15 +3,15 @@
     "SessionStart": [
       {
         "hooks": [
-          { "type": "command", "command": "bin/session-start.cmd", "timeout": 10 },
-          { "type": "command", "command": "bin/session-rules-banner.cmd", "timeout": 5 }
+          { "type": "command", "command": "bin/session-start.sh", "timeout": 10 },
+          { "type": "command", "command": "bin/session-rules-banner.sh", "timeout": 5 }
         ]
       }
     ],
     "UserPromptSubmit": [
       {
         "hooks": [
-          { "type": "command", "command": "bin/detect-feedback.cmd", "timeout": 5 }
+          { "type": "command", "command": "bin/detect-feedback.sh", "timeout": 5 }
         ]
       }
     ],
@@ -19,21 +19,22 @@
       {
         "matcher": "Bash|run_terminal_command",
         "hooks": [
-          { "type": "command", "command": "bin/safe-shell.cmd", "timeout": 5 },
-          { "type": "command", "command": "bin/block-pkill.cmd", "timeout": 5 },
-          { "type": "command", "command": "bin/pre-commit-check.cmd", "timeout": 30 }
+          { "type": "command", "command": "bin/safe-shell.sh", "timeout": 5 },
+          { "type": "command", "command": "bin/secret-exfil.sh", "timeout": 5 },
+          { "type": "command", "command": "bin/block-pkill.sh", "timeout": 5 },
+          { "type": "command", "command": "bin/pre-commit-check.sh", "timeout": 30 }
         ]
       },
       {
         "matcher": "Read|read_file|Edit|Write|MultiEdit|search_replace",
         "hooks": [
-          { "type": "command", "command": "bin/secrets-guard.cmd", "timeout": 5 }
+          { "type": "command", "command": "bin/secrets-guard.sh", "timeout": 5 }
         ]
       },
       {
         "matcher": "Edit|Write|MultiEdit|search_replace",
         "hooks": [
-          { "type": "command", "command": "bin/no-direct-code-guard.cmd", "timeout": 5 }
+          { "type": "command", "command": "bin/no-direct-code-guard.sh", "timeout": 5 }
         ]
       }
     ],
@@ -41,7 +42,7 @@
       {
         "matcher": "Edit|Write|MultiEdit|search_replace",
         "hooks": [
-          { "type": "command", "command": "bin/mark-review.cmd", "timeout": 5 }
+          { "type": "command", "command": "bin/mark-review.sh", "timeout": 5 }
         ]
       }
     ],
@@ -49,14 +50,21 @@
       {
         "matcher": "implementer|code-reviewer|tester|deployer|architect|feedback-observer|evolution-runner|progress-recorder",
         "hooks": [
-          { "type": "command", "command": "bin/subagent-receipt-gate.cmd", "timeout": 10 }
+          { "type": "command", "command": "bin/subagent-receipt-gate.sh", "timeout": 10 }
         ]
       }
     ],
     "Stop": [
       {
         "hooks": [
-          { "type": "command", "command": "bin/stop-reminder.cmd", "timeout": 5 }
+          { "type": "command", "command": "bin/stop-reminder.sh", "timeout": 5 }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          { "type": "command", "command": "bin/precompact-keep.sh", "timeout": 5 }
         ]
       }
     ]

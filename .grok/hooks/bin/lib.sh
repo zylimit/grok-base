@@ -1,6 +1,7 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Shared helpers for Grok project hooks.
 # Env (injected by Grok): GROK_WORKSPACE_ROOT, CLAUDE_PROJECT_DIR, GROK_SESSION_ID, GROK_HOOK_EVENT
+# GROK_HOOK_NAME is optional; if unset, fall back to the sourcing hook script name.
 
 set -u
 
@@ -49,8 +50,23 @@ tool_file_paths() {
     | head -5
 }
 
+# Append one deny line to .grok/hooks/gate-log.tsv. Write failure is ignored (fail-open).
+_append_gate_log() {
+  local reason=$1
+  local root hook ts sanitized log
+  root=$(project_root 2>/dev/null) || return 0
+  [ -n "$root" ] || return 0
+  hook=${GROK_HOOK_NAME:-unknown}
+  ts=$(date +%s 2>/dev/null) || return 0
+  sanitized=$(printf '%s' "$reason" | tr '\t\r\n' '   ' | cut -c1-240)
+  log="$root/.grok/hooks/gate-log.tsv"
+  mkdir -p "$(dirname -- "$log")" 2>/dev/null || return 0
+  printf '%s\t%s\t%s\t%s\n' "$ts" "$hook" "deny" "$sanitized" >>"$log" 2>/dev/null || true
+}
+
 deny() {
   local reason=$1
+  _append_gate_log "$reason" || true
   if command -v jq >/dev/null 2>&1; then
     jq -nc --arg r "$reason" '{decision:"deny",reason:$r}'
   else
@@ -75,3 +91,32 @@ fast_mode_active() {
   now=$(date +%s 2>/dev/null) || return 1
   [ "$expiry" -gt "$now" ]
 }
+
+# Blob fingerprint for .needs-review: git hash-object, else sha256sum.
+file_fingerprint() {
+  local root=$1 abs=$2 out
+  if command -v git >/dev/null 2>&1 && git -C "$root" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    out=$(git -C "$root" hash-object -- "$abs" 2>/dev/null) || out=""
+    if [ -n "$out" ]; then
+      printf '%s' "$out"
+      return 0
+    fi
+  fi
+  if command -v sha256sum >/dev/null 2>&1; then
+    out=$(sha256sum -- "$abs" 2>/dev/null | awk '{print $1}')
+    if [ -n "$out" ]; then
+      printf '%s' "$out"
+      return 0
+    fi
+  fi
+  return 1
+}
+
+# When sourced by a hook, name the log row even if the host omitted GROK_HOOK_NAME.
+if [ -z "${GROK_HOOK_NAME:-}" ]; then
+  GROK_HOOK_NAME=$(basename -- "${BASH_SOURCE[1]:-unknown}")
+  GROK_HOOK_NAME=${GROK_HOOK_NAME%.sh}
+  GROK_HOOK_NAME=${GROK_HOOK_NAME%.ps1}
+  [ -n "$GROK_HOOK_NAME" ] || GROK_HOOK_NAME=unknown
+  export GROK_HOOK_NAME
+fi

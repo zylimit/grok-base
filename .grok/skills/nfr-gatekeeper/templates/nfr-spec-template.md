@@ -2,6 +2,7 @@
 
 > 每条必须有「验证方式」。档位：C（普通信息系统）/ B（业务关键）/ A（涉资金/人身/设备）。
 > 本系统档位：{A|B|C}，理由：{失效最坏后果}
+> NFR 验证方式点名的外部工具不在 PATH → BLOCKED，先跑 `bash .grok/scripts/adapters.sh`。
 
 ## 1. 韧性 Resilience
 

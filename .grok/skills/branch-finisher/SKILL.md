@@ -4,7 +4,7 @@ description: 当用户要求收尾当前分支、合并前整理、处理 worktr
 ---
 
 [任务]
-    轻量分支收尾助手。只整理当前 Git 状态、给出安全菜单和必要验证，不引入 CCB daemon、tmux、round-counter、trace-matrix 或多模型编队。
+    轻量分支收尾助手。只整理当前 Git 状态、给出安全菜单和必要验证，不引入 CCB daemon、tmux、round-counter、trace-matrix 或多模型编队。并行改文件见 worktree-parallel。
 
 [执行步骤]
     1. 探测环境：`git rev-parse --show-toplevel`、`git status --short --branch`、`git branch --show-current`、`git rev-parse --git-dir`、`git rev-parse --git-common-dir`、`git rev-parse --show-superproject-working-tree`。

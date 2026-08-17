@@ -41,7 +41,8 @@ when-to-use: 大型代码库、monorepo、百万行、代码地图、CODEMAP、�
         根 AGENTS.md 保持全局纪律，绝不复制各包细节（上下文经济）。
 
     [打法四：LSP 导航]
-        项目根放 `.grok/lsp.json`（模板：templates/lsp-example.json，改成项目实际语言服务）。
+        默认文件：项目 `.grok/lsp.json`（脚手架已带 typescript / python / gopls；命令不在 PATH 时 Grok 自行跳过）。
+        要加 rust 等语言：从 templates/lsp-example.json 拷改，不要手写探测逻辑。
         被动诊断有配置即生效；主动 lsp 工具（goToDefinition/findReferences/workspaceSymbol）
         需用户侧开启：`GROK_LSP_TOOLS=1` 或 `~/.grok/config.toml` 设 `[features] lsp_tools = true`。
         生效后优先用 LSP 跳转替代全库 grep；同工作区子代理复用父会话的 LSP 运行时，无额外成本。
@@ -50,7 +51,7 @@ when-to-use: 大型代码库、monorepo、百万行、代码地图、CODEMAP、�
     [打法五：大库开发纪律]
         - 改动前用 `git diff --stat` 预估波及面；单 Task 波及 >20 文件 → 回 dev-planner 拆分
         - 多人/多任务并行 → 子代理用 `isolation: worktree`，改动隔离后再合回
-        - 长会话在 Phase 收口处 `/flush` 沉淀 + `/compact` 收上下文；随时 `/context` 看水位
+        - 跨会话 ADR / CODEMAP / 边界禁区用 `/remember` 沉淀（memory opt-in：`[memory] enabled` 或 `/memory on`，不强制全局开）；Phase 收口 `/flush` + `/compact`；随时 `/context` 看水位
         - 大规模机械改造（改 import、重命名）优先脚本化（sed/comby/codemod）再人查抽样，不逐文件手改
 
 [CODEMAP 维护规则]

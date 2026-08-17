@@ -86,6 +86,9 @@ description: 当用户要求打包、部署、发布、上线，或项目开发�
         - 无用户数据：`find [BUILD_DIR]/ -name ".forge-data" -o -name "workspaces"`
         - 无硬编码密钥：`grep -rn "sk-ant-\|sk-proj-\|ANTHROPIC_API_KEY\|OPENAI_API_KEY\|password.*=.*['\"]" [BUILD_DIR]/`
         发现任何一项 → 立刻停止，修复后重新构建。
+        对 BUILD_DIR 跑完后再：若存在发布归档（.zip / .tar / .tar.gz / .tgz），必须再跑
+        `bash .grok/scripts/release-scan.sh <归档>`（扫产物，不是只扫源树）。
+        命令缺 tar/unzip 时对归档 FAIL 可见，不得假装扫过。
 
     [依赖完整性]
         - npm audit 无 critical 漏洞

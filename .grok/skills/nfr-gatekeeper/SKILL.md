@@ -61,10 +61,11 @@ when-to-use: 非功能需求、五性、NFR、韧性、可靠性、安全需求�
 
 [门禁模式规程]
     1. 读 NFR-Spec.md，列出全部条目
-    2. 逐条执行其声明的验证方式（命令当场跑、测试当场看输出、演练看记录）
-    3. 每条结论：PASS（附证据）/ FAIL（附差距）/ WAIVED（附豁免人与理由）
-    4. 汇总输出五性门禁报告；有 FAIL 时给出修复路由（dev-builder / bug-fixer / arch-guardian）
-    5. 门禁报告不改代码；修复由主 Agent 另派
+    2. 先跑 `bash .grok/scripts/fitness.sh`（脚本存在则必须跑；红则记 FAIL 再继续逐条），然后逐条执行其声明的验证方式（命令当场跑、测试当场看输出、演练看记录）
+    3. 每条结论：PASS（附证据）/ FAIL（附差距）/ WAIVED（附豁免人与理由）/ BLOCKED（写不出或跑不出验证命令）
+    4. 写不出验证命令、或当场跑不出验证命令输出的条目 → **BLOCKED**，禁止记 PASS。没有输出就没有 PASS。NFR 验证方式点名的外部工具不在 PATH → 该条 **BLOCKED**，先跑 `bash .grok/scripts/adapters.sh`（Windows: `pwsh .grok/scripts/adapters.ps1`）。
+    5. 汇总输出五性门禁报告；有 FAIL / BLOCKED 时给出修复路由（dev-builder / bug-fixer / arch-guardian）
+    6. 门禁报告不改代码；修复由主 Agent 另派
 
 [输出]
     需求模式 → 加载 templates/nfr-spec-template.md 生成 NFR-Spec.md，并在 Product-Spec.md 的「非功能需求」节留指针。

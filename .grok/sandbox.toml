@@ -1,3 +1,6 @@
+# Isolation: see docs/ISOLATION.md (L0–L3).
+# hooks ≠ sandbox; this file is L3 kernel profiles only.
+# L3 invoke: grok --sandbox grok-review|strict
 # Project sandbox profiles (official .grok/sandbox.toml).
 # OS-level enforcement: Landlock (Linux >= 5.13) / Seatbelt (macOS); not on Windows.
 # Off by default -- opt in per session:  grok --sandbox grok-secure

@@ -21,8 +21,25 @@ try {
         Remove-Item -LiteralPath $reminder -Force -ErrorAction SilentlyContinue
         exit 0
     }
+    $lines = New-Object System.Collections.Generic.List[string]
+    foreach ($line in $files) {
+        $tab = $line.IndexOf([char]9)
+        if ($tab -lt 0) { continue }
+        $path = $line.Substring(0, $tab)
+        $fp = $line.Substring($tab + 1)
+        if (-not $path -or -not $fp) { continue }
+        $abs = Join-Path $root ($path -replace '/', '\')
+        if (-not (Test-Path -LiteralPath $abs -PathType Leaf)) { continue }
+        $cur = Get-ReviewFingerprint $root $abs
+        if ($cur -and $cur -ne $fp) {
+            $stale = "REVIEW STALE: $path changed since it was marked; re-review."
+            [void]$lines.Add($stale)
+            Write-Output $stale
+        }
+    }
     $msg = "STOP REMINDER: $($files.Count) file(s) pending review. Dispatch code-reviewer, then write clean to .grok/.needs-review."
-    Set-Content -LiteralPath $reminder -Value $msg -Encoding ascii -ErrorAction SilentlyContinue
+    [void]$lines.Add($msg)
+    Set-Content -LiteralPath $reminder -Value $lines.ToArray() -Encoding ascii -ErrorAction SilentlyContinue
     Write-Output $msg
 } catch { }
 exit 0

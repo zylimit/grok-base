@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # SessionStart banner (Unix)
 set -u
 BIN_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
